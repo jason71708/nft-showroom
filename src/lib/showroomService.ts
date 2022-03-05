@@ -1,37 +1,39 @@
-import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import panoramaImage from "../assets/showroom.jpeg";
-import { DDSLoader } from 'three/examples/jsm/loaders/DDSLoader.js';
-import { blindboxMarkers } from '../service/markerData';
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { DDSLoader } from "three/examples/jsm/loaders/DDSLoader.js";
+import { BlindboxMarker } from "../service/markerData";
 
-const usePanorama = (canvas: HTMLCanvasElement | null) => {
-  const isInitializedRef = useRef(false);
-  const [markerId, setMarkerId] = useState<string | undefined>();
+class ShowroomService {
+  private canvas: HTMLCanvasElement;
+  private camera: THREE.PerspectiveCamera;
+  private scene: THREE.Scene;
+  private renderer: THREE.WebGLRenderer;
+  private controls: OrbitControls;
+  private markersGroup: THREE.Object3D[] = [];
 
-  console.log("usePanorama");
-
-  useEffect(() => {
-    if (!canvas || isInitializedRef.current) {
-      return;
-    }
-
+  constructor(
+    canvas: HTMLCanvasElement,
+    panoramaImageUrl: string,
+    markers: BlindboxMarker[],
+    clickMarker: (marker: BlindboxMarker) => void
+  ) {
+    this.canvas = canvas;
     /*
      * Create a basic scene, camera and renderer
      */
-    const camera = new THREE.PerspectiveCamera(
+    this.camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
       0.1,
       2000
     );
-    camera.position.z = 0.01;
+    this.camera.position.z = 0.01;
 
-    const scene = new THREE.Scene();
+    this.scene = new THREE.Scene();
 
-    const renderer = new THREE.WebGLRenderer({ canvas });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer = new THREE.WebGLRenderer({ canvas });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
 
     /*
      * Setup panorama environment
@@ -39,10 +41,10 @@ const usePanorama = (canvas: HTMLCanvasElement | null) => {
     const geometry = new THREE.SphereGeometry(1000, 60, 40);
     geometry.scale(-1, 1, 1);
 
-    const texture = new THREE.TextureLoader().load(panoramaImage);
+    const texture = new THREE.TextureLoader().load(panoramaImageUrl);
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    this.scene.add(mesh);
 
     /*
      * Create Lighting
@@ -50,7 +52,7 @@ const usePanorama = (canvas: HTMLCanvasElement | null) => {
     const pointLight = new THREE.PointLight("#ddd");
     pointLight.position.set(10, 400, 15);
     const ambientLight = new THREE.AmbientLight("#999");
-    scene.add(pointLight, ambientLight);
+    this.scene.add(pointLight, ambientLight);
 
     /*
      * Add picture frame objects and images from markers
@@ -67,16 +69,14 @@ const usePanorama = (canvas: HTMLCanvasElement | null) => {
     );
     const frameMaterial = new THREE.MeshBasicMaterial({ envMap: cubemap });
 
-    const markersGroup: THREE.Object3D[] = [];
-
-    blindboxMarkers.forEach((marker, i) => {
+    markers.forEach((marker, i) => {
       // frame
       const frameGeo = new THREE.BoxGeometry(180, 180, 20);
       const frameMesh = new THREE.Mesh(frameGeo, frameMaterial);
       frameMesh.position.x = 220 - i * 200;
       frameMesh.position.z = 500;
       frameMesh.position.y = 100;
-      scene.add(frameMesh);
+      this.scene.add(frameMesh);
 
       // image
       const imageTexture = new THREE.TextureLoader().load(marker.image);
@@ -90,91 +90,83 @@ const usePanorama = (canvas: HTMLCanvasElement | null) => {
       imageMesh.position.z = -11;
       imageMesh.scale.set(-1, 1, 1);
       frameMesh.add(imageMesh);
-      markersGroup.push(imageMesh);
+      this.markersGroup.push(imageMesh);
     });
 
     /*
      * Setup camera controls
      */
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.rotateSpeed *= -0.5;
-    controls.target.set(1, 0, 1);
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.enableDamping = true;
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.rotateSpeed *= -0.5;
+    this.controls.target.set(1, 0, 1);
+    this.controls.enableZoom = false;
+    this.controls.enablePan = false;
+    this.controls.enableDamping = true;
 
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
+    const onWindowResize = () => {
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
     window.addEventListener("resize", onWindowResize);
 
     /*
      * Setup pointer event
      */
-    const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
+    const raycaster = new THREE.Raycaster();
 
-    function onPointerMove(event: PointerEvent) {
+    const onPointerMove = (event: PointerEvent) => {
       pointer.set(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1
       );
 
-      raycaster.setFromCamera(pointer, camera);
+      raycaster.setFromCamera(pointer, this.camera);
 
-      const intersects = raycaster.intersectObjects(markersGroup, false);
+      const intersects = raycaster.intersectObjects(this.markersGroup, false);
 
       if (intersects.length > 0) {
-        if (canvas) {
-          canvas.style.cursor = "pointer";
+        if (this.canvas) {
+          this.canvas.style.cursor = "pointer";
         }
       } else {
-        if (canvas) {
-          canvas.style.cursor = "grab";
+        if (this.canvas) {
+          this.canvas.style.cursor = "grab";
         }
       }
-    }
-
-    function onPointerDown(event: PointerEvent) {
+    };
+    const onPointerDown = (event: PointerEvent) => {
       pointer.set(
         (event.clientX / window.innerWidth) * 2 - 1,
         -(event.clientY / window.innerHeight) * 2 + 1
       );
 
-      raycaster.setFromCamera(pointer, camera);
+      raycaster.setFromCamera(pointer, this.camera);
 
-      const intersects = raycaster.intersectObjects(markersGroup, true);
+      const intersects = raycaster.intersectObjects(this.markersGroup, true);
 
-      if (intersects.length > 0 && !markerId) {
+      if (intersects.length > 0) {
         const intersect = intersects[0];
-        controls.enabled = false;
-        setMarkerId(intersect.object.userData.markerData.id);
-      } else {
-        controls.enabled = true;
+        clickMarker(intersect.object.userData.markerData);
       }
-    }
+    };
+
     canvas.addEventListener("pointermove", onPointerMove);
     canvas.addEventListener("pointerdown", onPointerDown);
 
     /*
      * Setup animation
      */
-    function animate() {
-      controls.update();
-      renderer.render(scene, camera);
+    const animate = () => {
+      this.controls.update();
+      this.renderer.render(this.scene, this.camera);
       requestAnimationFrame(animate);
-    }
+    };
+
     animate();
+  }
+}
 
-    /*
-     * Complete initialization
-     */
-    isInitializedRef.current = true;
-  }, [canvas]);
-
-  return { markerId, setMarkerId };
-};
-
-export default usePanorama
+export default ShowroomService;
