@@ -1,5 +1,8 @@
 # 🏞 NFT Showroom
 
+👇 Click to view the desktop demo 📹
+[![Desktop preview](https://img.youtube.com/vi/MtAtOeCSGJs/hqdefault.jpg)](https://youtu.be/MtAtOeCSGJs)
+👇 Click to view the mobile demo 📹
 [![Mobile preview](https://img.youtube.com/vi/mhgSpXLV-_E/hqdefault.jpg)](https://youtu.be/mhgSpXLV-_E)
 
 ## 📖 Requirements
