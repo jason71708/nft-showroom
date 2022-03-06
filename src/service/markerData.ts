@@ -8,6 +8,7 @@ export type BlindboxMarker = {
   id: string;
   type: "blindbox";
   address: string;
+  contractAbiUrl: string;
   image: string;
 };
 
@@ -16,8 +17,9 @@ export const blindboxMarkers: BlindboxMarker[] = [
     id: randomString(),
     type: "blindbox",
     address: "0xe7e1569f7904e4426e8f2bcd83ed93dbee573942",
-    image: "/unpack.png",
-  }
+    contractAbiUrl: "/contracts/CutieSquidsNFT.json",
+    image: "/blindMarker/unpack.png",
+  },
 ];
 
 export const markers = [...blindboxMarkers];

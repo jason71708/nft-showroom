@@ -14,8 +14,3 @@ button {
   border: none;
   cursor: pointer;
 }
-
-/* Overwrite Reactjs-popup style */
-.popup-content {
-  width: 400px;
-}

@@ -4,9 +4,9 @@ export const transformIpfsToPinataUrl = (
   ipfsUri: string | undefined
 ): string => {
   if (!ipfsUri) return "";
-  // return `https://gateway.pinata.cloud/ipfs/${ipfsUri.replace("ipfs://", "")}`;
+  return `https://gateway.pinata.cloud/ipfs/${ipfsUri.replace("ipfs://", "")}`;
   /* Because of Pinata's IPFS gateway has limitations, so I use local file path instead. */
-  return `/ipfs/${ipfsUri.split("/").pop()}`;
+  // return `/ipfs/${ipfsUri.split("/").pop()}`;
 };
 
 export const getOpenseaTestnetUrl = (
