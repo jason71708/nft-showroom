@@ -5,7 +5,7 @@ export const transformIpfsToPinataUrl = (
 ): string => {
   if (!ipfsUri) return "";
   return `https://gateway.pinata.cloud/ipfs/${ipfsUri.replace("ipfs://", "")}`;
-  /* Because of Pinata's IPFS gateway has limitations, so I use local file path instead. */
+  /* Because of Pinata's IPFS gateway has limitations, so you can use local file path instead. */
   // return `/ipfs/${ipfsUri.split("/").pop()}`;
 };
 
