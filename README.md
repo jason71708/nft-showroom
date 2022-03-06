@@ -1,4 +1,6 @@
-# 🏞 NFT Showroom 
+# 🏞 NFT Showroom
+
+[![Mobile preview](https://img.youtube.com/vi/mhgSpXLV-_E/maxresdefault.jpg)](https://youtu.be/mhgSpXLV-_E)
 
 ## 📖 Requirements
 
