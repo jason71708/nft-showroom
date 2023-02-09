@@ -34,7 +34,7 @@ const useConnectWallet = () => {
       if (ethereum && ethereum.isMetaMask) {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x4" }], // "0x4" is Rinkeby network
+          params: [{ chainId: "0x5" }], // "0x5" is Goerli network
         });
         /* There is a error from Metamask app webview when request permission multiple times continuously. */
       } else {

@@ -14,6 +14,8 @@ export type BlindboxMarker = {
 
 export const blindboxMarkers: BlindboxMarker[] = [
   {
+    // Change to yours address, contractAbiUrl & image
+    // Those files also need to be replace to yours.
     id: randomString(),
     type: "blindbox",
     address: "0xe7e1569f7904e4426e8f2bcd83ed93dbee573942",

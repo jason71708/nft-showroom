@@ -75,12 +75,17 @@ const Blindbox = ({ blindboxMarker }: { blindboxMarker: BlindboxMarker }) => {
   const mintNFT = async () => {
     try {
       if (account && balance && signer && contract) {
+        if (balance <= mintPrice) {
+          throw {
+            code: 4001,
+            message: 'Balance not enough',
+          }
+        }
         setStatus('processing')
         const result = await contract.mintNFT(1, {
           value: ethers.utils.parseEther(mintPrice),
         });
         const response = await result.wait()
-        console.log('mintNFT response', response)
         const tokenId = response.events[0].args.tokenId as BigNumber
         setTokenId(tokenId.toString())
         getNFTInfo(tokenId)
@@ -105,7 +110,6 @@ const Blindbox = ({ blindboxMarker }: { blindboxMarker: BlindboxMarker }) => {
         const response = await fetch(transformIpfsToPinataUrl(nftInfoUri))
         const nftMeta: BlindboxNFTMetaData = await response.json()
         setNftMeta(nftMeta)
-        console.log('nftMeta', nftMeta)
         setStatus('success')
       } else {
         throw new Error('No account or balance or signer or contract')
@@ -150,7 +154,7 @@ const Blindbox = ({ blindboxMarker }: { blindboxMarker: BlindboxMarker }) => {
               </span>
               <span className="px-4 md:px-12">
                 <span className="text-2xl flex items-center">
-                  <img className="w-4 inline-block mr-2" src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg" alt="eth" />
+                  <img className="w-4 inline-block mr-2" src="/icon/eth-diamond-black.webp" alt="eth" />
                   {mintPrice}
                 </span>
                 <span className="text-gray-500 text-lg">Price</span>

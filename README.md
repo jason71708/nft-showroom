@@ -22,10 +22,14 @@ yarn
 - Virtual showroom for displaying NFTs.
 - Mint NFTs in showroom.
 - Mobile friendly. (But need to open in MetaMask App browser.)
-- Use Rinkeby testnet. (If for production, need to change to mainnet.)
+- Use Goerli testnet. (If for production, need to change to mainnet.)
 
 ## 🖊 Usage
 
 1. Change `VITE_PRODUCTION_URL` value to yours in `.env` file.
 2. Change `blindboxMarkers` value to yours in `src/service/markerData` file, include `address`, `contractAbiUrl` and `image`.
 3. Accourding to the `blindboxMarkers` value, you need to replace images and contracts file in `public/` folder.
+
+## 📃 Smart Contract
+
+Use this [sample contract](https://github.com/jason71708/nic_meta) to deploy your own smart contract on the Ethereum (ETH) blockchain.
