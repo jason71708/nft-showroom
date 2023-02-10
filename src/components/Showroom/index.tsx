@@ -25,8 +25,6 @@ const Showroom = ({
     hasInit.current = true
   };
 
-  console.log("Panorama render");
-
   return (
     <div className="w-screen h-screen">
       <canvas

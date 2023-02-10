@@ -1,6 +1,6 @@
 import useWallet from '../../hooks/useWallet'
 
-const Wallet = () => {
+const Wallet = ({onClick}: {onClick: () => void}) => {
   const {
     provider,
     account,
@@ -10,6 +10,7 @@ const Wallet = () => {
   } = useWallet()
 
   const onWalletClicked = () => {
+    onClick()
     if (account) {
       alert(`Your account is ${account} and your balance is ${balance}`)
     } else {

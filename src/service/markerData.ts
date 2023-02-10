@@ -18,7 +18,7 @@ export const blindboxMarkers: BlindboxMarker[] = [
     // Those files also need to be replace to yours.
     id: randomString(),
     type: "blindbox",
-    address: "0xe7e1569f7904e4426e8f2bcd83ed93dbee573942",
+    address: "0x9a23512f7aAA2EE7A938c1223aCbC028c5653A00",
     contractAbiUrl: "/contracts/CutieSquidsNFT.json",
     image: "/blindMarker/unpack.png",
   },
